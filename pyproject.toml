@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "turtle-link-shortener"
+version = "0.1.0"
+description = ""
+authors = ["blackprince001 <appiahboaduprince@gmail.com>"]
+readme = "README.md"
+packages = [{include = "turtle_link_shortener"}]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+fastapi = "^0.89.1"
+sqlalchemy = "^1.4.46"
+pydantic = "^1.10.4"
+python-dotenv = "^0.21.0"
+validators = "^0.20.0"
+
+
+[tool.poetry.group.dev.dependencies]
+black = "^22.12.0"
+pytest = "^7.2.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
