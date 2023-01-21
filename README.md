@@ -2,4 +2,4 @@
 
 Currently procrastinating the project.
 
-Inspiration from [Real Python Website](realpython.org)
+Inspiration from [Real Python Website](https://realpython.com/build-a-python-url-shortener-with-fastapi/)
