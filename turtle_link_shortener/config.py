@@ -8,7 +8,10 @@ class Settings(BaseSettings):
     db_url: str = "sqlite:///./shortener.db"
 
     class Config:
-        # allows to import environment variables from .env
+        # allows the import of environment variables from .env
+        # env file has variables included as attributes in
+        # this class and more. you can decide to go with the
+        # default preset used above or set your own .env file
         env_file = ".env"
 
 
