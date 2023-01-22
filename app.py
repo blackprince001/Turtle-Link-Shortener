@@ -8,7 +8,8 @@ app = FastAPI()
 @app.get("/")
 async def root():
     return (
-        "A simple API for shortening links. Go to http://localhost:8000/docs for more!"
+        "A simple API for shortening links. Infer from the docs right here \
+            http://localhost:8000/docs for more!"
     )
 
 
