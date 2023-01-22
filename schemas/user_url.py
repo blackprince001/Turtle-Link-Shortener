@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from datetime import datetime
 
 
 class UserURLBase(BaseModel):
@@ -6,10 +7,13 @@ class UserURLBase(BaseModel):
 
 
 class UserURLCreate(UserURLBase):
-    pass
+    user_id: int
+    link_created: str
+    link_time_created: datetime
 
 
 class UserURL(UserURLBase):
     
     class Config:
         orm_mode = True
+        
