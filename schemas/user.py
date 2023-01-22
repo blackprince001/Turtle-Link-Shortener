@@ -2,7 +2,8 @@ from pydantic import BaseModel
 
 
 class UserBase(BaseModel):
-    pass
+    username: str
+    password: str
 
 
 class UserCreate(UserBase):
@@ -16,10 +17,11 @@ class User(UserBase):
 
 
 class AdminCreate(UserBase):
-    pass
+    is_admin: bool = True
 
 
 class Admin(UserBase):
 
     class Config:
         orm_mode = True
+        
