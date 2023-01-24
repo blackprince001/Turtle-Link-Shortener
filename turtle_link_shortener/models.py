@@ -1,8 +1,9 @@
 from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, DateTime
-from . import database
+from sqlalchemy.orm import relationship
+from .database import Base
 
 
-class UserURL(database.Base):
+class UserURL(Base):
     __tablename__ = "user_url"
 
     user_id = Column(Integer, ForeignKey("user.id"), primary_key=True, nullable=False)
@@ -12,16 +13,16 @@ class UserURL(database.Base):
 
     link_time_created = Column(DateTime, nullable=False)
 
-    link_creator = database.relationship(
+    link_creator = relationship(
         "User", back_populates="links", lazy="selectin"
     )
 
-    created_links = database.relationship(
+    created_links = relationship(
         "URLS", back_populates="links_created", lazy="selectin"
     )
 
 
-class URL(database.Base):
+class URL(Base):
     __tablename__ = "urls"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -34,12 +35,12 @@ class URL(database.Base):
     time_created = Column(DateTime, nullable=False)
     clicks = Column(Integer, default=0)
 
-    links_created: list[UserURL] = database.relationship(
+    links_created: list[UserURL] = relationship(
         "UserURL", back_populates="created_links", lazy="selectin"
     )
 
 
-class User(database.Base):
+class User(Base):
     __tablename__ = "user"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -47,7 +48,8 @@ class User(database.Base):
     username = Column(String, unique=True, nullable=False)
     password = Column(String, nullable=False)
     is_admin = Column(Boolean, default=False)
+    is_deleted = Column(Boolean, default=False)
 
-    links: list[UserURL] = database.relationship(
+    links: list[UserURL] = relationship(
         "UserURL", back_populates="link_creator", lazy="selectin"
     )

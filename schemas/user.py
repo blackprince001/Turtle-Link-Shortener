@@ -7,7 +7,7 @@ class UserBase(BaseModel):
 
 
 class UserCreate(UserBase):
-    pass
+    is_deleted: bool = False
 
 
 class User(UserBase):
@@ -16,7 +16,7 @@ class User(UserBase):
         orm_mode = True
 
 
-class AdminCreate(UserBase):
+class AdminCreate(UserCreate):
     is_admin: bool = True
 
 
