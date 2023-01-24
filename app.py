@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from routes.turtle import turtle_shortener
 from routes.admin import admin
+from routes.user import user
 
 app = FastAPI()
 
@@ -13,5 +14,6 @@ async def root():
     )
 
 
-app.include_router(turtle_shortener)
 app.include_router(admin)
+app.include_router(user)
+app.include_router(turtle_shortener)
