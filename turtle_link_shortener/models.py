@@ -8,7 +8,7 @@ class UserURL(Base):
 
     user_id = Column(Integer, ForeignKey("user.id"), primary_key=True, nullable=False)
     link_created = Column(
-        String, ForeignKey("url.custom_url"), primary_key=True, nullable=False
+        String, ForeignKey("urls.custom_url"), primary_key=True, nullable=False
     )
 
     link_time_created = Column(DateTime, nullable=False)
@@ -18,7 +18,7 @@ class UserURL(Base):
     )
 
     created_links = relationship(
-        "URLS", back_populates="links_created", lazy="selectin"
+        "URL", back_populates="links_created", lazy="selectin"
     )
 
 
