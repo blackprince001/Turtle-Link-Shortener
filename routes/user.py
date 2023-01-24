@@ -3,6 +3,7 @@ from schemas.user import UserCreate
 from utils.database_utils import get_db
 from sqlalchemy.orm import Session
 from turtle_link_shortener.models import User as UserModel
+from turtle_link_shortener.security import Password
 
 user = APIRouter()
 
@@ -10,6 +11,7 @@ user = APIRouter()
 @user.post("/user/create", tags=["users"])
 async def create_user(new_user: UserCreate, db: Session = Depends(get_db)):
     db_user = UserModel(**new_user.dict())
+    db_user.password = Password.hash(db_user.password)
 
     db.add(db_user)
     db.commit()
