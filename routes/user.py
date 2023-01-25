@@ -5,10 +5,11 @@ from schemas.url import URLBase
 from utils.database_utils import get_db
 from utils.router_utils import generate_keys
 from sqlalchemy.orm import Session
+from sqlalchemy import select
 from turtle_link_shortener.models import User as UserModel, URL as URLModel, UserURL
 from turtle_link_shortener.security import Password
 from turtle_link_shortener.errors import UserNotFound, URLNotValid, URLForwardError
-import validators
+from pydantic import HttpUrl
 from datetime import datetime
 
 user = APIRouter()
@@ -38,7 +39,7 @@ async def get_user(user_id: int, db: Session = Depends(get_db)):
 async def shorten_link(
     url: URLBase, user_id: int, custom_key: str, db: Session = Depends(get_db)
 ):
-    if not validators.url(url.target_url):
+    if not HttpUrl(url=url.target_url):
         raise URLNotValid(status_code=400, detail="Your provided URL is not valid")
 
     if db.get(UserModel, user_id) is None:
@@ -71,13 +72,16 @@ async def shorten_link(
 
 @user.get("/user/{custom_url}", tags=["users"])
 async def forward(custom_url: str, db: Session = Depends(get_db)):
-    db_url = (
-        db.query(URLModel)
-        .filter(URLModel.custom_url == custom_url, URLModel.is_active)
-        .first()
-    )
-    if db_url:
-        return RedirectResponse(db_url.target_url)
+    query = (
+            select(URLModel.target_url)
+            .where(URLModel.custom_url == custom_url)
+            .where(URLModel.is_active == True)
+        )
+
+    url = db.scalar(query)
+
+    if url is not None:
+        return RedirectResponse(url.target_url, status_code=307)
     else:
         raise URLForwardError(status_code=404, 
                 detail=f"Bad Request. {custom_url} not linked to any valid url!")
