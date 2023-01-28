@@ -6,7 +6,7 @@ def rand_char() -> str:
 
 
 def generate_keys(custom: str = ""):
-    if custom == "":
+    if custom == " " or custom == "":
         key = "".join(rand_char() for _ in range(3)) + "-" + "".join(
             rand_char() for _ in range(3)
         ) + "-" + "".join(rand_char() for _ in range(3))
