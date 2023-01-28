@@ -81,12 +81,21 @@ async def forward(custom_url: str, db: Session = Depends(get_db)):
     url = db.scalar(query)
 
     if url is not None:
+        url.clicks += 1
+        db.commit()
+        db.refresh(url)
+        
         return RedirectResponse(url.target_url, status_code=307)
     else:
         raise URLForwardError(status_code=404, 
                 detail=f"Bad Request. {custom_url} not linked to any valid url!")
 
 
-@user.get("/user/links", tags=["users"])
-async def get_links(db: Session = Depends(get_db)):
-    pass
+@user.get("/user/{user_id}/links", tags=["users"])
+async def get_links(user_id: int, db: Session = Depends(get_db)):
+    db_user = db.get(UserURL, user_id)
+    
+    if db_user is None:
+        raise UserNotFound(status_code=404, detail=f"No user with id={user_id}!")
+
+    return db.scalars(select(UserURL).where(UserURL.user_id == db_user.id)).all()
