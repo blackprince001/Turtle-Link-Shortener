@@ -9,7 +9,8 @@ from sqlalchemy import select
 from turtle_link_shortener.models import User as UserModel, URL as URLModel, UserURL
 from turtle_link_shortener.security import Password
 from turtle_link_shortener.errors import UserNotFound, URLNotValid, URLForwardError
-from pydantic import HttpUrl
+from pydantic import AnyUrl
+from pydantic.tools import parse_obj_as
 from datetime import datetime
 
 user = APIRouter()
@@ -39,12 +40,14 @@ async def get_user(user_id: int, db: Session = Depends(get_db)):
 async def shorten_link(
     url: URLBase, user_id: int, custom_key: str, db: Session = Depends(get_db)
 ):
-    if not HttpUrl(url=url.target_url):
+    if not parse_obj_as(AnyUrl, url.target_url):
         raise URLNotValid(status_code=400, detail="Your provided URL is not valid")
 
     if db.get(UserModel, user_id) is None:
         raise UserNotFound(status_code=404, 
                 detail=f"No user with id={user_id}. Cannot proceed with user_auth!")
+
+    # TODO - also check if the custom_url has been used by another user
 
     # set the characters to be used for tokenization
     key, secret_key = generate_keys(custom_key)
@@ -70,15 +73,9 @@ async def shorten_link(
     return db_url
 
 
-@user.get("/user/{custom_url}", tags=["users"])
+@user.get("/{custom_url}", tags=["users"])
 async def forward(custom_url: str, db: Session = Depends(get_db)):
-    query = (
-            select(URLModel.target_url)
-            .where(URLModel.custom_url == custom_url)
-            .where(URLModel.is_active == True)
-        )
-
-    url = db.scalar(query)
+    url = db.scalar(select(URLModel).where(URLModel.custom_url == custom_url))
 
     if url is not None:
         url.clicks += 1
@@ -93,9 +90,12 @@ async def forward(custom_url: str, db: Session = Depends(get_db)):
 
 @user.get("/user/{user_id}/links", tags=["users"])
 async def get_links(user_id: int, db: Session = Depends(get_db)):
-    db_user = db.get(UserURL, user_id)
-    
-    if db_user is None:
-        raise UserNotFound(status_code=404, detail=f"No user with id={user_id}!")
+    db_user = db.get(UserModel, user_id)
 
-    return db.scalars(select(UserURL).where(UserURL.user_id == db_user.id)).all()
+    if db_user is None:
+        raise UserNotFound(status_code=404, detail=f"No user with id={user_id}")
+        
+    links = db.scalars(select(UserURL).where(UserURL.user_id == db_user.id)).all()
+
+    return [link for link in links]
+    
