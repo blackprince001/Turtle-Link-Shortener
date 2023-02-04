@@ -5,6 +5,10 @@ class UserNotFound(HTTPException):
     pass
 
 
+class IncorrectPassword(HTTPException):
+    pass
+
+
 class URLNotValid(HTTPException):
     pass
 
