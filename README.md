@@ -9,6 +9,15 @@ Link Shortener demo working on localhost!
 <img src="/assets/Link-demo-edited.gif">
 </img>
 
+> How user data is stored
+![Alt text](assets/user-table.png)
+
+> How shorted links by a specific user are mapped
+![label](assets/user-created-urls.png)
+
+> How shorted links are stored
+![label](assets/url-created-records.png)
+
 ## Project Structure
 
 ```console
