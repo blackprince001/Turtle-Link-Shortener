@@ -6,7 +6,7 @@ Inspiration from [Real Python Website](https://realpython.com/build-a-python-url
 
 Link Shortener demo working on localhost!
 
-<img src="/assets/Link-demo-edited.gif">
+<img src="/assets/demo-recording.gif">
 </img>
 
 > How user data is stored
