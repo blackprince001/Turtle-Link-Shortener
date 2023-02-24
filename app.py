@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Depends
 from routes.admin import admin
-from routes.user import user
+from routes.user import user, create_user
 from turtle_link_shortener.errors import UserNotFound, IncorrectPassword
 from turtle_link_shortener.models import User as UserModel
 from turtle_link_shortener.security import Password
@@ -20,13 +20,7 @@ async def root():
 
 @app.get("/signup")
 async def signup(new_user: UserCreate, db: Session = Depends(get_db)):
-    db_user = UserModel(**new_user.dict())
-
-    db.add(db_user)
-    db.commit()
-    db.refresh(db_user)
-
-    return db_user
+    return create_user(new_user, db=db)
 
 
 @app.get("/login")
