@@ -11,3 +11,6 @@ shortener.db
 .vscode
 
 *.sql
+
+
+.idea
