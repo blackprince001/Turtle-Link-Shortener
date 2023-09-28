@@ -99,7 +99,5 @@ async def get_links(user_id: int, db: Session = Depends(get_db)):
     if db_user is None:
         raise UserNotFound(status_code=404, detail=f"No user with id={user_id}")
         
-    links = db.scalars(select(UserURL).where(UserURL.user_id == db_user.id)).all()
-
-    return [link for link in links]
+    return db_user.links
     
