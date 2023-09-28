@@ -47,7 +47,11 @@ async def shorten_link(
         raise UserNotFound(status_code=404, 
                 detail=f"No user with id={user_id}. Cannot proceed with user_auth!")
 
-    # TODO - also check if the custom_url has been used by another user
+    # check if the custom_url has been used by another user
+    if db.scalar(select(URLModel).where(URLModel.custom_url == custom_key)) is not None:
+        raise URLNotValid(status_code=400, 
+                          detail=f"Custom URL {custom_key} \
+                          has already been used by another user!")
 
     # set the characters to be used for tokenization
     key, secret_key = generate_keys(custom_key)
