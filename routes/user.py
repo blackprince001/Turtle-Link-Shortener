@@ -4,6 +4,7 @@ from schemas.user import UserCreate
 from schemas.url import URLBase
 from utils.database_utils import get_db
 from utils.router_utils import generate_keys
+from utils.qr_utils import generate_qr_code
 from sqlalchemy.orm import Session
 from sqlalchemy import select
 from turtle_link_shortener.models import User as UserModel, URL as URLModel, UserURL
@@ -12,6 +13,9 @@ from turtle_link_shortener.errors import UserNotFound, URLNotValid, URLForwardEr
 from pydantic import AnyUrl
 from pydantic.tools import parse_obj_as
 from datetime import datetime
+from fastapi.responses import JSONResponse
+import io
+import base64
 
 user = APIRouter()
 
@@ -73,8 +77,21 @@ async def shorten_link(
 
     db_url.custom_url = key
     db_url.admin_url = secret_key
+    
+    qr_code = generate_qr_code(db_url)
 
-    return db_url
+    # Convert the PIL Image to bytes for response.
+    img_bytes = io.BytesIO()
+    qr_code.save(img_bytes, format="PNG")
+    img_bytes = img_bytes.getvalue()
+
+    # Return the short URL and the QR code image in the response.
+    response = {
+        "short_url": db_url,
+        "qr_code": base64.b64encode(img_bytes).decode('utf-8')
+    }
+
+    return JSONResponse(content=response)
 
 
 @user.get("/{custom_url}", tags=["users"])
