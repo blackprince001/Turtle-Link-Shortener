@@ -82,12 +82,13 @@ async def shorten_link(
 
     # Convert the PIL Image to bytes for response.
     img_bytes = io.BytesIO()
-    qr_code.save(img_bytes, format="PNG")
+    qr_code.save(img_bytes)
     img_bytes = img_bytes.getvalue()
 
     # Return the short URL and the QR code image in the response.
     response = {
-        "short_url": db_url,
+        "short_url": db_url.custom_url,
+        "admin_url": db_url.admin_url,
         "qr_code": base64.b64encode(img_bytes).decode('utf-8')
     }
 
