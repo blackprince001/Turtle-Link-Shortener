@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, DateTime
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, Mapped
 from .database import Base
 
 
@@ -35,7 +35,7 @@ class URL(Base):
     time_created = Column(DateTime, nullable=False)
     clicks = Column(Integer, default=0)
 
-    links_created: list[UserURL] = relationship(
+    links_created: Mapped[UserURL] = relationship(
         "UserURL", back_populates="created_links", lazy="selectin"
     )
 
@@ -50,6 +50,6 @@ class User(Base):
     is_admin = Column(Boolean, default=False)
     is_deleted = Column(Boolean, default=False)
 
-    links: list[UserURL] = relationship(
+    links: Mapped[UserURL] = relationship(
         "UserURL", back_populates="link_creator", lazy="selectin"
     )
